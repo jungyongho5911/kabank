@@ -1,33 +1,36 @@
 package com.kabank.web.serviceImpl;
 
+import java.lang.reflect.Member;
+import java.nio.channels.ShutdownChannelGroupException;
+import java.util.Vector;
+
+import javax.swing.JOptionPane;
+import javax.xml.bind.util.ValidationEventCollector;
+
 import com.kabank.web.bean.MemberBean;
 import com.kabank.web.service.MemberSerivce;
 
 public class MemberServiceImpl implements MemberSerivce {
-	private MemberBean[]members;
-	private int memberCount;
-	
-	public MemberServiceImpl(int membercount) {
-		this.memberCount = 0;
-		members = new MemberBean[membercount];
+	private Vector<MemberBean> members;
+	private int customeNum;
+	public MemberServiceImpl() {
+		members = new Vector<MemberBean>(10,10);
+		customeNum = 1000;
+		
 	}
 	@Override
 	public void addMember(MemberBean member) {
-		members[memberCount] = member;
-		memberCount++;
+		members.add(member);
 	}
 	@Override
-	public int memberCount() {
-		return this.memberCount;
-	}
-	@Override
-	public  MemberBean[]list(){
+	public  Vector<MemberBean>list(){
+		
 		return members;
 	} 
 	@Override
 	public int createCustomNum() {
-		int foo = 0;
-		return foo;
+		customeNum++;
+		return this.customeNum;
 	}
 	public String findGender(String ssn) {
 		String foo = "";
@@ -79,7 +82,73 @@ public class MemberServiceImpl implements MemberSerivce {
 		
 		return null;
 	}
-
+	@Override
+	public int count() {
+		
+		return members.size();
+	}
+	@Override
+	public void deleAll() {
+		members.clear();
+	}
+	@Override
+	public void delete(String id) {
+		String res = "";
+		for(int i=0;i<members.size();i++) {
+			if(id.equals(members.get(i).getId())) {
+				members.removeElementAt(i);
+			}
+				
+			}
+				
+		}
+	@Override
+	public String login(MemberBean member) {
+		String res = "아디가 존재하지 않습니다.";
+		for(int i=0; i<members.size();i++) {
+			if(member.getId().equals(members.get(i).getId())) {
+				res = (member.getPass().equals(members.get(i).getPass()))?"로그인성공":"비밀번호틀림";
+				return res;
+			}
+		}
+		return res;
+	}
+	@Override
+	public MemberBean findById(String id) {
+		MemberBean member = new MemberBean();
+		for(int i=0;i<members.size();i++) {
+			if(id.equals(members.get(i).getId())) {
+				member = members.get(i);
+			}
+		}
+		return member;
+	}
+	@Override
+	public Vector<MemberBean> findByName(String name) {
+		Vector<MemberBean> foo = new Vector<>();
+		for(int i=0; i<members.size();i++) {
+			if(name.equals(members.get(i).getName())) {
+				foo.add(members.get(i));
+			}
+		}
+		return foo;
+	}
+	@Override
+	public void deleteId(String id) {
+		for(int i=0; i<members.size();i++) {
+			if(id.equals(members.get(i).getId())) {
+				members.removeElementAt(i);
+			}
+		}
+		
+	}
+	@Override
+	public void updatePass(MemberBean member) {
+		findById(member.getId()).setPass(member.getPass());
+	}
+	
 }
+
+
 
 
